@@ -4,7 +4,6 @@ import sys
 from collections import defaultdict
 
 def find_duplicate_keys(path):
-    # 字串檔裡 key 的正則
     key_pattern = re.compile(r'^\s*"(?P<key>[^"]+)"\s*=')
     occurrences = defaultdict(list)
 
@@ -15,7 +14,6 @@ def find_duplicate_keys(path):
                 key = m.group('key')
                 occurrences[key].append(idx)
 
-    # 篩選出重複的 key
     duplicates = {k: v for k, v in occurrences.items() if len(v) > 1}
     return duplicates
 
@@ -27,12 +25,12 @@ def main():
     path = sys.argv[1]
     dup = find_duplicate_keys(path)
     if dup:
-        print("發現重複的 key：")
+        print("Found repeat key:")
         for key, lines in dup.items():
-            print(f'  "{key}" 出現於行：{", ".join(map(str, lines))}')
+            print(f'  "{key}" appear in Line:{", ".join(map(str, lines))}')
         sys.exit(2)
     else:
-        print("沒有發現重複的 key，全部獨一無二 👍")
+        print("No repeat key found, all unique 👍")
 
 if __name__ == "__main__":
     main()
