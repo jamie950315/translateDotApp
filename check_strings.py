@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import re
 import sys
+import pathlib
+
 
 def validate_strings_file(path):
     pattern = re.compile(r'^\s*"[^"]+"\s*=\s*"[^"]+"\s*;\s*$')
     bad_lines = []
 
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding='utf-16') as f:
         lines = f.readlines()
 
     visited = set()
@@ -41,12 +43,9 @@ def validate_strings_file(path):
     return bad_lines
 
 def main():
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} path/to/Localizable.strings", file=sys.stderr)
-        sys.exit(1)
 
-    path = sys.argv[1]
-    with open(path, encoding='utf-8') as f:
+    path=pathlib.Path.home()/"Downloads"/"translating"/"zh-Hant.lproj"/"Localizable.strings"
+    with open(path, encoding='utf-16') as f:
         original_lines = f.readlines()
 
     bad = validate_strings_file(path)
