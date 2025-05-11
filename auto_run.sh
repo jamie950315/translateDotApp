@@ -14,7 +14,7 @@ fi
 python3 - << 'PY'
 import sys
 try:
-    import openai  # replace/add more packages if needed
+    import openai
     sys.exit(0)
 except ImportError:
     sys.exit(1)
@@ -34,8 +34,8 @@ else
 fi
 
 
-bash "${script_dir}/setup_translate.sh"
+bash "${script_dir}/shell/setup_translate.sh"
 
-python3 "${script_dir}/OAITranslateAsync.py"
+python3 "${script_dir}/python/OAITranslateAsync.py"
 
-bash "${script_dir}/apply_translate.sh"
+bash "${script_dir}/shell/apply_translate.sh"

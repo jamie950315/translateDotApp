@@ -100,7 +100,7 @@ def ensure_format():
 
 async def main():
     with open(OUTPUT_FILE, "w", encoding="utf-16") as out_fp:
-            out_fp.write("")
+        out_fp.write("")
 
     lock=asyncio.Lock()
     tasks=[]
