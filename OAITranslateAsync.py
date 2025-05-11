@@ -110,6 +110,7 @@ async def main():
         tasks.append(asyncio.create_task(translate_and_write(chunk, lock)))
     await asyncio.gather(*tasks)
     ensure_format()
+    print("Complete")
 
 
 if __name__ == "__main__":
