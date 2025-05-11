@@ -13,7 +13,7 @@ UI_STRINGS_FILE=PROJECT_DIR/"rawStrings"/"ui_strings.txt"
 OUTPUT_FILE=PROJECT_DIR/"zh-Hant.lproj"/"Localizable.strings"
 
 MODEL="gpt-4.1-mini"
-CHUNK_SIZE=10
+CHUNK_SIZE=500
 
 
 with open("LLMTranslatePrompts.md", "r", encoding="utf-8") as f:
