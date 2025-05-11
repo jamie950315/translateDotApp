@@ -3,7 +3,7 @@ import pathlib
 import asyncio
 from openai import AsyncOpenAI
 
-client = AsyncOpenAI()
+client=AsyncOpenAI()
 
 PROJECT_DIR=pathlib.Path.home()/"Downloads"/"translating"
 
@@ -25,7 +25,7 @@ with open(UI_STRINGS_FILE, "r", encoding="utf-8") as f:
 async def translate_chunk(chunk):
 
     prompt_input="\n".join(chunk)
-    response = await client.responses.create(
+    response=await client.responses.create(
         model=MODEL,
         instructions=instructions,
         input=prompt_input
@@ -34,7 +34,7 @@ async def translate_chunk(chunk):
 
 
 async def translate_and_write(chunk, lock):
-    translated = await translate_chunk(chunk)
+    translated=await translate_chunk(chunk)
     async with lock:
         with open(OUTPUT_FILE, "a", encoding="utf-16") as out_fp:
             out_fp.write(translated)
@@ -42,10 +42,13 @@ async def translate_and_write(chunk, lock):
 
 
 async def main():
-    lock = asyncio.Lock()
-    tasks = []
+    with open(OUTPUT_FILE, "w", encoding="utf-16") as out_fp:
+            out_fp.write("")
+
+    lock=asyncio.Lock()
+    tasks=[]
     for i in range(0, len(all_strings), CHUNK_SIZE):
-        chunk = all_strings[i : i + CHUNK_SIZE]
+        chunk=all_strings[i : i + CHUNK_SIZE]
         print("dispatching chunk")
         tasks.append(asyncio.create_task(translate_and_write(chunk, lock)))
     await asyncio.gather(*tasks)
