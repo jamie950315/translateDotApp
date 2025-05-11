@@ -1,6 +1,8 @@
 import os
 import pathlib
 import asyncio
+import re
+import sys
 from openai import AsyncOpenAI
 
 client=AsyncOpenAI()
@@ -40,6 +42,61 @@ async def translate_and_write(chunk, lock):
             out_fp.write(translated)
             out_fp.write("\n")
 
+def validate_strings_file():
+
+    pattern=re.compile(r'^\s*"[^"]+"\s*=\s*"[^"]+"\s*;\s*$')
+    bad_lines=[]
+
+    with open(OUTPUT_FILE, encoding='utf-16') as f:
+        lines=f.readlines()
+
+    visited=set()
+
+    for idx, line in enumerate(lines):
+        if idx in visited:
+            continue
+        if not line.strip() or line.strip().startswith("/*"):
+            continue
+        if pattern.match(line):
+            continue
+
+        merged=line.strip()
+        merge_indices=[idx]
+        success=False
+        for j in range(idx + 1, len(lines)):
+            if not lines[j].strip() or lines[j].strip().startswith("/*"):
+                continue
+            merged+=lines[j].strip()
+            merge_indices.append(j)
+            if pattern.match(merged):
+                success=True
+                break
+            if ";" in merged:
+                break
+        if success:
+            visited.update(merge_indices)
+            continue
+
+        bad_lines.append((idx+1, line.rstrip('\n')))
+
+    return bad_lines
+
+def ensure_format():
+
+    with open(OUTPUT_FILE, encoding='utf-16') as f:
+        original_lines=f.readlines()
+
+    bad=validate_strings_file()
+    if bad:
+        print("Bad lines detected, automatically removing them...")
+        bad_line_numbers={ln - 1 for ln, content in bad}
+        filtered_lines=[line for idx, line in enumerate(original_lines) if idx not in bad_line_numbers]
+        with open(OUTPUT_FILE, "w", encoding="utf-16") as f:
+            f.writelines(filtered_lines)
+        print("Bad lines removed. All in the right format now.")
+    else:
+        print("All in the right format")
+
 
 async def main():
     with open(OUTPUT_FILE, "w", encoding="utf-16") as out_fp:
@@ -52,6 +109,7 @@ async def main():
         print("dispatching chunk")
         tasks.append(asyncio.create_task(translate_and_write(chunk, lock)))
     await asyncio.gather(*tasks)
+    ensure_format()
 
 
 if __name__ == "__main__":
