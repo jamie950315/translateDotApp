@@ -1,7 +1,37 @@
 #!/usr/bin/env bash
 set -e
 
+# Determine this script's directory
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Temporarily allow dependency-check to fail without exiting
+set +e
+echo "[auto_run] Checking Python dependencies..."
+python3 - << 'PY'
+import sys
+try:
+    import openai  # replace/add more packages if needed
+    sys.exit(0)
+except ImportError:
+    sys.exit(1)
+PY
+status=$?
+set -e
+
+if [ "$status" -ne 0 ]; then
+    echo "[auto_run] Missing dependencies detected. Setting up virtual environment..."
+    python3 -m venv "${script_dir}/venv"
+    source "${script_dir}/venv/bin/activate"
+    echo "[auto_run] Installing Python libraries..."
+    pip install --upgrade pip
+    pip install openai
+else
+    echo "[auto_run] Dependencies are satisfied."
+    
+    if [ -f "${script_dir}/venv/bin/activate" ]; then
+        source "${script_dir}/venv/bin/activate"
+    fi
+fi
 
 bash "${script_dir}/setup_translate.sh"
 
