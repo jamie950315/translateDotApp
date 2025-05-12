@@ -18,7 +18,7 @@ CHUNK_SIZE=100
 ReceivedCount=0
 
 
-with open("LLMTranslatePrompts.md", "r", encoding="utf-8") as f:
+with open(SCRIPT_DIR/"LLMTranslatePrompts.md", "r", encoding="utf-8") as f:
     instructions=f.read()
 
 with open(UI_STRINGS_FILE, "r", encoding="utf-8") as f:
