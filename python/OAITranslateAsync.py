@@ -15,6 +15,8 @@ OUTPUT_FILE=APP_DIR/"zh-Hant.lproj"/"Localizable.strings"
 MODEL="gpt-4.1-mini"
 CHUNK_SIZE=100
 
+ReceivedCount=0
+
 
 with open("LLMTranslatePrompts.md", "r", encoding="utf-8") as f:
     instructions=f.read()
@@ -35,9 +37,13 @@ async def translate_chunk(chunk):
     return response.output_text
 
 
-async def translate_and_write(chunk, lock):
+async def translate_and_write(chunk, lock, chunkCount):
+
+    global ReceivedCount
     translated=await translate_chunk(chunk)
     async with lock:
+        ReceivedCount+=1
+        print(f"[Translate] Received chunk: {ReceivedCount}/{chunkCount}")
         with open(OUTPUT_FILE, "a", encoding="utf-16") as out_fp:
             out_fp.write(translated)
             out_fp.write("\n")
@@ -88,14 +94,14 @@ def ensure_format():
 
     bad=validate_strings_file()
     if bad:
-        print("Bad lines detected, automatically removing them...")
+        print("[Translate] Bad lines detected, automatically removing them...")
         bad_line_numbers={ln - 1 for ln, content in bad}
         filtered_lines=[line for idx, line in enumerate(original_lines) if idx not in bad_line_numbers]
         with open(OUTPUT_FILE, "w", encoding="utf-16") as f:
             f.writelines(filtered_lines)
-        print("Bad lines removed. All in the right format now.")
+        print("[Translate] Bad lines removed. All in the right format now.")
     else:
-        print("All in the right format")
+        print("[Translate] All in the right format")
 
 
 async def main():
@@ -104,13 +110,21 @@ async def main():
 
     lock=asyncio.Lock()
     tasks=[]
+
+    if ((len(all_strings))%CHUNK_SIZE==0):
+        chunkCount=(len(all_strings))//CHUNK_SIZE
+    else:
+        chunkCount=((len(all_strings))//CHUNK_SIZE)+1
+
     for i in range(0, len(all_strings), CHUNK_SIZE):
-        chunk=all_strings[i : i + CHUNK_SIZE]
-        print("dispatching chunk")
-        tasks.append(asyncio.create_task(translate_and_write(chunk, lock)))
+        chunk=all_strings[i : i+CHUNK_SIZE]
+        tasks.append(asyncio.create_task(translate_and_write(chunk, lock, chunkCount)))
+    
+    print(f"[Translate] Dispatched chunk: {chunkCount}")
+    print("[Translate] Waiting OpenAI API response...")
     await asyncio.gather(*tasks)
     ensure_format()
-    print("Complete")
+    print("[Translate] Complete")
 
 
 if __name__ == "__main__":
