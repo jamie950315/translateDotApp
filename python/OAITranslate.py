@@ -7,10 +7,11 @@ from openai import OpenAI
 
 client=OpenAI()
 
-PROJECT_DIR=pathlib.Path.home()/"Downloads"/"translating"
-
-UI_STRINGS_FILE=PROJECT_DIR/"rawStrings"/"ui_strings.txt"
-OUTPUT_FILE=PROJECT_DIR/"zh-Hant.lproj"/"Localizable.strings"
+SCRIPT_DIR=pathlib.Path(__file__).resolve().parent.parent
+OUTPUT_DIR=SCRIPT_DIR/"Output"
+APP_DIR=OUTPUT_DIR/(sys.argv[1])
+UI_STRINGS_FILE=APP_DIR/"rawStrings"/"ui_strings.txt"
+OUTPUT_FILE=APP_DIR/"zh-Hant.lproj"/"Localizable.strings"
 
 MODEL="gpt-4.1-mini"
 CHUNK_SIZE=100

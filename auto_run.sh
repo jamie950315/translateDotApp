@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
+
+read -p "Enter app name (without .app): " APP_NAME
+
 set -e
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 set +e
 echo "[auto_run] Checking Python dependencies..."
 
-if [ -f "${script_dir}/venv/bin/activate" ]; then
-    source "${script_dir}/venv/bin/activate"
+if [ -f "${SCRIPT_DIR}/venv/bin/activate" ]; then
+    source "${SCRIPT_DIR}/venv/bin/activate"
 fi
 
 
@@ -24,8 +27,8 @@ set -e
 
 if [ "$status" -ne 0 ]; then
     echo "[auto_run] Missing dependencies detected. Setting up virtual environment..."
-    python3 -m venv "${script_dir}/venv"
-    source "${script_dir}/venv/bin/activate"
+    python3 -m venv "${SCRIPT_DIR}/venv"
+    source "${SCRIPT_DIR}/venv/bin/activate"
     echo "[auto_run] Installing Python libraries..."
     pip install --upgrade pip
     pip install openai
@@ -33,9 +36,8 @@ else
     echo "[auto_run] Dependencies are satisfied."
 fi
 
+bash "${SCRIPT_DIR}/shell/setup_translate.sh" "$APP_NAME"
 
-bash "${script_dir}/shell/setup_translate.sh"
+python3 "${SCRIPT_DIR}/python/OAITranslateAsync.py" "$APP_NAME"
 
-python3 "${script_dir}/python/OAITranslateAsync.py"
-
-bash "${script_dir}/shell/apply_translate.sh"
+bash "${SCRIPT_DIR}/shell/apply_translate.sh" "$APP_NAME"
