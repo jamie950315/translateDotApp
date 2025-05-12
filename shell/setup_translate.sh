@@ -27,9 +27,9 @@ touch "${LPROJ_DIR}/Localizable.strings"
 
 STRING_DIR="${APP_DIR}/rawStrings"
 mkdir -p "${STRING_DIR}"
-strings "${APP_DIR}/${APP_NAME}.app/Contents/MacOS/${APP_NAME}" > ${STRING_DIR}/all_strings.txt
+strings "${APP_DIR}/${APP_NAME}.app/Contents/MacOS/${APP_NAME}" > "${STRING_DIR}/all_strings.txt"
 grep -E '^[A-Za-z0-9[:punct:] ]{2,}$' ${STRING_DIR}/all_strings.txt \
-  | grep ' ' > ${STRING_DIR}/ui_strings.txt
+  | grep ' ' > "${STRING_DIR}/ui_strings.txt"
 
 echo "[setup] ✅ Setup complete!"
 echo "[setup] • Copied to: ${APP_DIR}/${APP_NAME}.app"

@@ -41,3 +41,5 @@ bash "${SCRIPT_DIR}/shell/setup_translate.sh" "$APP_NAME"
 python3 "${SCRIPT_DIR}/python/OAITranslateAsync.py" "$APP_NAME"
 
 bash "${SCRIPT_DIR}/shell/apply_translate.sh" "$APP_NAME"
+
+echo "[auto_run] Complete. ${APP_NAME} have been translated."
