@@ -28,8 +28,20 @@ touch "${LPROJ_DIR}/Localizable.strings"
 STRING_DIR="${APP_DIR}/rawStrings"
 mkdir -p "${STRING_DIR}"
 strings "${APP_DIR}/${APP_NAME}.app/Contents/MacOS/${APP_NAME}" > "${STRING_DIR}/all_strings.txt"
-grep -E '^[A-Za-z0-9[:punct:] ]{2,}$' ${STRING_DIR}/all_strings.txt \
-  | grep ' ' > "${STRING_DIR}/ui_strings.txt"
+
+grep -E '^[A-Za-z0-9[:punct:] ]{2,}$' "${STRING_DIR}/all_strings.txt" \
+  | grep -v -E '[_^$]' \
+  | grep -v -E '[a-z][A-Z]' \
+  | grep -v -E '([^@]*@){3}' \
+  | grep -v -E '[A-Z]{2}' \
+  | grep -v -E '([0-9][A-Za-z]|[A-Za-z][0-9])' \
+  | grep -v -E '\.[A-Za-z]' \
+  | grep -v -E '^[0-9[:punct:]]+$' \
+  | grep -v -E '([[:punct:]]@|@[[:punct:]])' \
+  | grep -v -E '^[-{@:*<?\.]' \
+  | grep -v -E '^(com|org|dev|net)\.' \
+  | grep -v -E "['\"]" \
+  > "${STRING_DIR}/ui_strings.txt"
 
 echo "[setup] ✅ Setup complete!"
 echo "[setup] • Copied to: ${APP_DIR}/${APP_NAME}.app"
