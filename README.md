@@ -1,15 +1,15 @@
-### get all strings from MyApp.app and then store to all_strings.txt
+### git clone this repository
 ```bash
-strings MyApp.app/Contents/MacOS/MyApp > all_strings.txt
+git clone https://github.com/jamie950315/translateDotApp.git
+cd translateDotApp
 ```
 
-### filter, make the file more clean
+### make it executable
 ```bash
-grep -E '^[A-Za-z0-9[:punct:] ]{2,}$' all_strings.txt \
-  | grep ' ' > ui_strings.txt
+chmod +x auto_run.sh
 ```
 
-### sign the app to use it
+### run it
 ```bash
-codesign --force --deep --sign - MyApp.app
+./auto_run.sh
 ```
